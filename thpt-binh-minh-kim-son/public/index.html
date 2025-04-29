@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>THPT Bình Minh - Kim Sơn, Ninh Bình</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  .window {
+    @apply rounded-xl shadow-lg p-12 mb-8 cursor-pointer transition-transform duration-300 ease-in-out flex flex-col justify-center items-center font-semibold text-2xl select-none;
+  }
+  .window:hover {
+    @apply shadow-3xl transform scale-105;
+  }
+  .subject-windows {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8;
+  }
+  .topic-windows {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8;
+  }
+  .exercise-windows {
+    @apply bg-white rounded-lg p-8 shadow-md mt-6 border border-gray-300;
+  }
+  .exercise-windows h4 {
+    @apply font-bold mb-4 flex items-center space-x-3 text-gray-900;
+  }
+  .exercise-list li {
+    @apply list-disc list-inside mb-2 text-gray-700;
+  }
+  .badge {
+    @apply inline-block px-4 py-1 rounded-full text-sm font-semibold text-white;
+  }
+  .badge-theory {
+    @apply bg-blue-700;
+  }
+  .badge-exercise {
+    @apply bg-green-700;
+  }
+  .back-button {
+    @apply text-blue-700 hover:text-blue-900 cursor-pointer mb-6 inline-block font-semibold;
+  }
+  /* Calendar styles */
+  #calendar {
+    @apply bg-white rounded-lg p-8 shadow-md mt-8 border border-gray-300 max-w-md mx-auto;
+  }
+  #calendar h3 {
+    @apply text-3xl font-bold mb-6 text-center;
+  }
+  #calendar table {
+    @apply w-full text-center border-collapse;
+  }
+  #calendar th, #calendar td {
+    @apply border border-gray-300 p-3;
+  }
+  #visitor-count {
+    @apply text-white text-sm mt-3;
+  }
+  /* Introduction section font */
+  #home-section h2, #home-section p, #home-section ul, #home-section article {
+    font-family: 'Playfair Display', serif;
+  }
+  /* Subject window bright gradients and text */
+  .window[data-subject="toan"] {
+    @apply bg-gradient-to-r from-blue-600 to-blue-400 text-white;
+  }
+  .window[data-subject="vatli"] {
+    @apply bg-gradient-to-r from-red-600 to-red-400 text-white;
+  }
+  .window[data-subject="hoahoc"] {
+    @apply bg-gradient-to-r from-yellow-400 to-yellow-300 text-gray-900;
+  }
+  .window[data-subject="sinhhoc"] {
+    @apply bg-gradient-to-r from-pink-600 to-pink-400 text-white;
+  }
+  .window[data-subject="casio"] {
+    @apply bg-gradient-to-r from-green-600 to-green-400 text-white;
+  }
+  /* Subtopic windows */
+  .subtopic-window {
+    @apply cursor-pointer bg-white text-gray-900 text-base p-6 rounded-lg shadow-md border border-gray-300 transition hover:bg-gray-100 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+  /* Exercise windows */
+  .exercise-windows {
+    @apply bg-white rounded-lg p-8 shadow-md mt-6 border border-gray-300;
+  }
+  /* AI grading section */
+  #ai-grading-section {
+    @apply max-w-4xl mx-auto p-8 bg-white rounded-xl shadow-xl border border-gray-300 mt-12;
+  }
+  #ai-grading-section h2 {
+    @apply text-4xl font-extrabold mb-8 text-center text-blue-700;
+  }
+  #ai-grading-section label {
+    @apply block mb-3 font-semibold text-gray-800;
+  }
+  #ai-grading-section input[type="file"] {
+    @apply border border-gray-300 rounded-lg p-3 w-full mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+  #ai-grading-section button {
+    @apply bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition duration-300 font-semibold;
+  }
+  #ai-grading-result {
+    @apply mt-6 p-6 bg-gray-100 rounded-lg border border-gray-300 whitespace-pre-wrap text-gray-900 font-medium;
+  }
+</style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-['Roboto'] min-h-screen flex flex-col">
+<header class="bg-gradient-to-r from-blue-700 via-green-600 to-yellow-500 text-white shadow-lg">
+  <div class="container mx-auto flex flex-col md:flex-row items-center justify-between p-6">
+    <h1 class="text-4xl font-extrabold mb-3 md:mb-0">THPT Bình Minh - Kim Sơn, Ninh Bình</h1>
+    <nav class="flex space-x-8 text-lg font-semibold">
+      <a href="#" id="home-link" class="hover:text-yellow-400 transition">Trang chủ</a>
+      <a href="#" id="subjects-link" class="hover:text-yellow-400 transition">Các môn học</a>
+      <a href="#ai-grading-section" id="ai-grading-link" class="hover:text-yellow-400 transition">Chấm bài AI</a>
+      <a href="https://thptbinhminh.lms.vnedu.vn/app/" target="_blank" class="hover:text-yellow-400 transition">Học trực tuyến</a>
+    </nav>
+  </div>
+</header>
+<main class="container mx-auto flex-grow p-8">
+  <section id="home-section" class="text-center max-w-6xl mx-auto">
+    <h2 class="text-5xl font-extrabold mb-8">Giới thiệu trường và nhóm tác giả</h2>
+    <p class="mb-8 max-w-4xl mx-auto text-xl leading-relaxed">Chào mừng đến với website học tập dành cho học sinh THPT của trường THPT Bình Minh - Kim Sơn, Ninh Bình. Đây là sản phẩm thiết kế bởi nhóm tác giả:</p>
+    <ul class="list-disc list-inside max-w-lg mx-auto mb-8 space-y-3 text-xl">
+      <li><i class="fas fa-user-tie mr-3 text-blue-600"></i>Phạm Hùng Cường (Nhóm trưởng - GV Vật lí)</li>
+      <li><i class="fas fa-user-graduate mr-3 text-green-600"></i>Nguyễn Thọ Lộc (Hóa học)</li>
+      <li><i class="fas fa-user-graduate mr-3 text-yellow-600"></i>Ninh Văn Hữu (Toán học)</li>
+    </ul>
+    <img src="https://consosukien.vn/pic/News/Nam_2024/638397904228255756.jpg" alt="Giải thể thao cán bộ, giáo viên, nhân viên ngành Giáo dục tỉnh Ninh Bình lần thứ XVII, năm 2023" class="mx-auto mb-4 rounded-xl shadow-lg max-w-full h-auto"/>
+    <p class="text-sm italic text-gray-600 mb-8">Giải thể thao cán bộ, giáo viên, nhân viên ngành Giáo dục tỉnh Ninh Bình lần thứ XVII, năm 2023</p>
+    <article class="text-left bg-white p-8 rounded-xl shadow-lg border border-gray-300 max-w-5xl mx-auto">
+      <h3 class="text-3xl font-bold mb-6 text-center">Giới thiệu về Trường THPT Bình Minh</h3>
+      <p class="mb-6 leading-relaxed">Trường THPT Bình Minh, huyện Kim Sơn, tỉnh Ninh Bình thành lập ngày 26/10/1994. Trải qua 29 năm xây dựng và trưởng thành, Nhà trường đã có sự phát triển mạnh về quy mô và chất lượng giáo dục, tạo được niềm tin của các cấp ủy Đảng, chính quyền và Nhân dân địa phương.</p>
+      <p class="mb-6 leading-relaxed">Trong những năm học vừa qua, Nhà trường đã thực hiện nhiều giải pháp đồng bộ để nâng cao chất lượng đại trà và chất lượng mũi nhọn, đó là bám sát sự chỉ đạo của ngành Giáo dục, tăng cường đổi mới phương pháp dạy học và kiểm tra đánh giá, đổi mới sinh hoạt chuyên môn theo nghiên cứu bài học, tổ chức chuyên đề STEM và trải nghiệm sáng tạo. Song song với đó, Trường cũng tích cực hưởng ứng, thực hiện các phong trào thi đua như “Dạy tốt, học tốt”, “Xây dựng trường học xanh - sạch - đẹp - an toàn - hạnh phúc”, “Giỏi việc trường, đảm việc nhà”; các cuộc vận động: “Mỗi thầy, cô giáo là một tấm gương đạo đức tự học và sáng tạo” gắn với việc “Học tập và làm theo tư tưởng, đạo đức, phong cách Hồ Chí Minh”. Nhờ đó, Trường luôn hoàn thành xuất sắc nhiệm vụ được giao.</p>
+      <p class="mb-6 leading-relaxed">Giáo dục toàn diện đạt được kết quả rất tích cực, tỷ lệ học sinh khá, giỏi và xếp loại hạnh kiểm khá, tốt tăng theo mỗi năm học. Tính trong 5 năm (2018-2023), tỷ lệ học sinh khá, giỏi tăng từ 72,2%-87,7%; Hạnh kiểm xếp loại tốt, khá tăng từ 98,7% lên 99,5%, còn lại là trung bình, không có học sinh xếp loại hạnh kiểm yếu. Mặt khác, thông qua kỳ thi kiểm định chất lượng, Trường luôn có kết quả đứng đầu trong khối các trường THPT không chuyên của Tỉnh. Kết quả thi tốt nghiệp phổ thông của nhà trường hằng năm luôn đạt tỷ lệ cao, là một trong những trường có hiệu quả đào tạo tốt nhất với tỷ lệ đỗ tốt nghiệp THPT đạt 100%. Trong 2 năm học gần đây, Trường đều có học sinh đạt thủ khoa khối A của tỉnh Ninh Bình. Công tác hướng nghiệp và dạy nghề đạt kết quả khả quan, 100% học sinh tốt nghiệp ra trường đều có chứng chỉ nghề (Điện dân dụng) đạt loại khá, giỏi.</p>
+      <p class="mb-6 leading-relaxed">Nâng cao chất lượng giáo dục mũi nhọn được Nhà trường đặc biệt quan tâm đầu tư với nhiều giải pháp đột phá như: Thực hiện tốt công tác tuyên truyền để giáo viên, học sinh ý thức được tầm quan trọng của việc nâng cao chất lượng mũi nhọn, góp phần đưa nhà trường nằm trong tốp đầu của Tỉnh. Làm tốt công tác thi đua khen thưởng, vinh danh, có chế độ đãi ngộ tốt đối với những giáo viên nhiệt tình, tâm huyết, có nhiều thành tích. Xây dựng môi trường học đường thân thiện, đoàn kết với các giá trị cốt lõi; cải cách lề lối làm việc; thực hiện nghiêm kỷ luật lao động. Bên cạnh đó, Nhà trường còn đặc biệt quan tâm đến công tác bồi dưỡng đội ngũ giáo viên, xây dựng thư viện nhà trường với nhiều đầu sách tham khảo hay để giáo viên tự học và bồi dưỡng kiến thức, thường xuyên tạo điều kiện để giáo viên trao đổi kinh nghiệm chuyên môn với đồng nghiệp tại các trường trong và ngoài Tỉnh. Sử dụng hiệu quả nguồn học liệu mở trên mạng, các trang hỗ trợ dạy và học.</p>
+      <p class="mb-6 leading-relaxed">Do vậy, trong 5 năm qua, kết quả thi học sinh giỏi văn hóa của Trường đều xếp trong tốp đầu toàn tỉnh (Nhất, Nhì, Ba), trong đó có 2 giải quốc gia và 225 giải cấp tỉnh; thi khoa học kỹ thuật có 12 học sinh đoạt giải cấp tỉnh; 20 học sinh đạt Giải thưởng Đinh Bộ Lĩnh; hằng năm có khoảng 80% học sinh lớp 12 đỗ đại học, cao đẳng. Ngoài ra, cuộc thi Chinh phục IELTS cấp tỉnh năm học 2021-2022 có 2 học sinh lọt vào vòng chung kết và giành 1 giải Nhất, 1 giải Khuyến khích; năm học 2022-2023 có 1 học sinh lọt vào vòng chung kết và giành giải Nhất. Các sáng kiến kinh nghiệm của cán bộ, giáo viên ngày càng được cải thiện về chất lượng được áp dụng tốt trong giảng dạy và quản lý. Trong 5 năm, có 15 sáng kiến được xếp loại giỏi, 12 sáng kiến được xếp loại khá, 4 sáng kiến được công nhận cấp Tỉnh.</p>
+      <p class="mb-6 leading-relaxed">Việc tổ chức xây dựng các chuyên đề dạy học cho các nhóm chuyên môn, dạy học tích hợp liên môn được Trường triển khai rất tích cực. Trong 5 năm, đã tổ chức được hơn 25 chuyên đề lớn nhỏ, góp phần nâng cao chất lượng, hiệu quả giờ lên lớp và giúp học sinh tích cực, chủ động tiếp thu kiến thức. Trong đó, những chuyên đề được đánh giá cao như: “Tìm hiểu về Biển đảo Việt Nam” của nhóm Địa lý được phát sóng trên Truyền hình Quân đội; chuyên đề “Tìm hiểu về di chúc Bác Hồ” của nhóm Lịch sử; chuyên đề “Hàn Mạc Tử - một hồn thơ” của nhóm Ngữ văn… Đặc biệt, năm học 2020-2021 đã tổ chức được 17 chuyên đề STEM của các nhóm chuyên môn trong đó 2/3 số chuyên đề đạt chất lượng cao. Năm học 2022-2023 đã tổ chức được 01 chuyên đề cấp Tỉnh môn GDQP&AN, 13 chuyên đề cấp trường.</p>
+      <p class="mb-6 leading-relaxed">Đổi mới công tác quản lý, ứng dụng công nghệ thông tin được Nhà trường khai thác triệt để trong việc quản lý và học tập. Các phòng làm việc, phòng chờ, thư viện đều được trang bị máy tính có kết nối Internet để quản lý nhân sự, quản lý điểm, quản lý tài chính; quản lý thư viện... Đặc biệt Nhà trường đã ứng dụng hiệu quả các phần mềm trực tuyến để tổ chức thi thử tốt nghiệp THPT online cho học sinh khối 12 và 2 cuộc thi online: Olympic Tài năng Tiếng Anh; Thiết kế Trailer sách - Giới thiệu sách…</p>
+      <p class="mb-6 leading-relaxed">Ghi nhận những thành tích đã đạt được, liên tục từ năm học 2017-2018 đến năm học 2021-2022, Trường THPT Bình Minh được Bộ trưởng Bộ Giáo dục và Đào tạo và Chủ tịch UBND tỉnh Ninh Bình tặng Cờ và Bằng khen, được Chính phủ tặng Bằng khen. Có 300 lượt cá nhân được tặng danh hiệu Lao động tiên tiến; 60 lượt cá nhân được tặng danh hiệu Chiến sĩ thi đua cơ sở; 10 lượt cá nhân được tặng Bằng khen của Bộ trưởng Bộ GD&ĐT và Chủ tịch UBND tỉnh…</p>
+      <p class="text-right font-semibold mt-8">- Minh Hà</p>
+    </article>
+  </section>
+  <section id="subjects-section" class="hidden">
+    <h2 class="text-4xl font-extrabold mb-8">Các môn học</h2>
+    <div class="subject-windows" role="list"></div>
+  </section>
+  <section id="topics-section" class="hidden">
+    <span class="back-button" id="back-to-subjects" tabindex="0" role="button" aria-pressed="false" aria-label="Quay lại các môn học"><i class="fas fa-arrow-left"></i> Quay lại các môn học</span>
+    <h2 class="text-4xl font-extrabold mb-8" id="topics-title">Chủ đề</h2>
+    <div class="topic-windows" id="topics-container" role="list"></div>
+  </section>
+  <section id="exercises-section" class="hidden">
+    <span class="back-button" id="back-to-topics" tabindex="0" role="button" aria-pressed="false" aria-label="Quay lại các chủ đề"><i class="fas fa-arrow-left"></i> Quay lại các chủ đề</span>
+    <h2 class="text-4xl font-extrabold mb-8" id="exercises-title">Dạng bài tập</h2>
+    <div id="exercises-container"></div>
+  </section>
+  <section id="ai-grading-section" class="hidden" aria-live="polite" aria-atomic="true">
+    <h2>Chấm bài AI</h2>
+    <label for="image-upload">Tải ảnh bài tập lên để chấm điểm và nhận xét:</label>
+    <input type="file" id="image-upload" accept="image/*" aria-describedby="ai-grading-desc"/>
+    <button id="grade-button" aria-label="Chấm bài">Chấm bài</button>
+    <div id="ai-grading-result" class="mt-6" role="region" aria-live="polite" aria-atomic="true"></div>
+  </section>
+</main>
+<footer class="bg-gradient-to-r from-blue-700 via-green-600 to-yellow-500 text-white p-8 mt-auto text-center text-lg font-semibold">
+  © 2024 THPT Bình Minh - Kim Sơn, Ninh Bình - Thiết kế bởi: Phạm Hùng Cường, Nguyễn Thọ Lộc, Ninh Văn Hữu
+  <div id="visitor-count" class="mt-3">Lượt truy cập: 0</div>
+</footer>
+<script>
+const subjectsData = {
+  toan: {
+    name: "Môn Toán",
+    semesters: {
+      "Học kỳ 1": {
+        "Ứng dụng đạo hàm": {
+          exercises: {
+            "Lý thuyết": "Giới thiệu về đạo hàm, các quy tắc tính đạo hàm và ứng dụng trong bài toán cực trị.",
+            "Bài tập trắc nghiệm": [
+              "Tính đơn điệu, cực trị, GTLN/GTNN",
+              "Đường tiệm cận, khảo sát và vẽ đồ thị hàm số (bậc ba, phân thức hữu tỉ)",
+              "Ứng dụng thực tiễn (tốc độ, tối ưu hóa)"
+            ]
+          }
+        },
+        "Vectơ và hệ trục tọa độ trong không gian": {
+          exercises: {
+            "Lý thuyết": "Vectơ (phép toán, tích vô hướng, góc), hệ tọa độ, biểu thức tọa độ, ứng dụng thực tế.",
+            "Bài tập trắc nghiệm": [
+              "Phép toán với vectơ",
+              "Tích vô hướng, góc",
+              "Hệ tọa độ, biểu thức tọa độ"
+            ]
+          }
+        },
+        "Số đặc trưng đo độ phân tán": {
+          exercises: {
+            "Lý thuyết": "Khoảng biến thiên, tứ phân vị, phương sai, độ lệch chuẩn, phân tích dữ liệu.",
+            "Bài tập trắc nghiệm": [
+              "Khoảng biến thiên",
+              "Tứ phân vị",
+              "Phương sai",
+              "Độ lệch chuẩn",
+              "Phân tích dữ liệu"
+            ]
+          }
+        },
+        "Chuyên đề xác suất": {
+          exercises: {
+            "Lý thuyết": "Biến ngẫu nhiên rời rạc, phân bố nhị thức, công thức Bernoulli, ứng dụng thực tiễn.",
+            "Bài tập trắc nghiệm": [
+              "Biến ngẫu nhiên rời rạc",
+              "Phân bố nhị thức",
+              "Công thức Bernoulli",
+              "Ứng dụng thực tiễn"
+            ]
+          }
+        },
+        "Hoạt động trải nghiệm": {
+          exercises: {
+            "Lý thuyết": "Sử dụng GeoGebra (khảo sát hàm số, vẽ vectơ), phân tích dữ liệu (độ dài gang tay) bằng Excel.",
+            "Bài tập thực hành": [
+              "Khảo sát hàm số bằng GeoGebra",
+              "Vẽ vectơ bằng GeoGebra",
+              "Phân tích dữ liệu bằng Excel"
+            ]
+          }
+        }
+      },
+      "Học kỳ 2": {
+        "Nguyên hàm và tích phân": {
+          exercises: {
+            "Lý thuyết": "Nguyên hàm (hàm sơ cấp), tích phân (diện tích, thể tích khối tròn xoay), ứng dụng thực tiễn.",
+            "Bài tập trắc nghiệm": [
+              "Nguyên hàm hàm sơ cấp",
+              "Tích phân diện tích",
+              "Thể tích khối tròn xoay",
+              "Ứng dụng thực tiễn"
+            ]
+          }
+        },
+        "Phương pháp tọa độ trong không gian": {
+          exercises: {
+            "Lý thuyết": "Phương trình mặt phẳng, đường thẳng, mặt cầu, tính góc, khoảng cách, vị trí tương đối, ứng dụng thực tế.",
+            "Bài tập trắc nghiệm": [
+              "Phương trình mặt phẳng",
+              "Phương trình đường thẳng",
+              "Phương trình mặt cầu",
+              "Tính góc, khoảng cách",
+              "Vị trí tương đối"
+            ]
+          }
+        },
+        "Xác suất có điều kiện": {
+          exercises: {
+            "Lý thuyết": "Xác suất có điều kiện, công thức nhân, xác suất toàn phần, công thức Bayes, bài toán thực tiễn.",
+            "Bài tập trắc nghiệm": [
+              "Xác suất có điều kiện",
+              "Công thức nhân",
+              "Xác suất toàn phần",
+              "Công thức Bayes",
+              "Bài toán thực tiễn"
+            ]
+          }
+        },
+        "Chuyên đề": {
+          exercises: {
+            "Lý thuyết": "Quy hoạch tuyến tính (bất phương trình bậc nhất), tối ưu hóa (đạo hàm), tiền tệ, lãi suất, tín dụng, đầu tư tài chính, kế hoạch tài chính cá nhân.",
+            "Bài tập trắc nghiệm": [
+              "Bất phương trình bậc nhất",
+              "Tối ưu hóa (đạo hàm)",
+              "Tiền tệ, lãi suất, tín dụng",
+              "Đầu tư tài chính",
+              "Kế hoạch tài chính cá nhân"
+            ]
+          }
+        },
+        "Hoạt động trải nghiệm": {
+          exercises: {
+            "Lý thuyết": "Tính nguyên hàm/tích phân, vẽ đồ họa 3D (tam giác Penrose, mặt Mobius) bằng GeoGebra.",
+            "Bài tập thực hành": [
+              "Tính nguyên hàm/tích phân",
+              "Vẽ đồ họa 3D bằng GeoGebra"
+            ]
+          }
+        }
+      }
+    }
+  },
+  vatli: {
+    name: "Môn Vật lí",
+    semesters: {
+      "Chương trình chính": {
+        "Vật lí nhiệt": {
+          exercises: {
+            "Lý thuyết": "Cấu trúc chất, chuyển thể, nội năng, định luật I nhiệt động lực học, nhiệt độ, thang nhiệt độ, nhiệt dung riêng, nhiệt nóng chảy/hóa hơi, bài tập.",
+            "Bài tập trắc nghiệm": [
+              "Tính nhiệt lượng truyền trong quá trình đẳng tích",
+              "Tính nhiệt lượng truyền trong quá trình đẳng áp",
+              "Tính nhiệt lượng truyền trong quá trình đẳng nhiệt",
+              "Tính công của khí trong quá trình đẳng tích",
+              "Tính công của khí trong quá trình đẳng áp",
+              "Tính công của khí trong quá trình đẳng nhiệt",
+              "Tính hiệu suất của động cơ nhiệt",
+              "Tính nhiệt lượng trong quá trình chuyển pha",
+              "Tính nhiệt dung riêng của chất rắn",
+              "Tính nhiệt dung riêng của chất lỏng"
+            ]
+          }
+        },
+        "Khí lí tưởng": {
+          exercises: {
+            "Lý thuyết": "Mô hình động học phân tử, định luật Boyle, Charles, phương trình trạng thái, áp suất khí, quan hệ động năng-nhiệt độ, bài tập.",
+            "Bài tập trắc nghiệm": [
+              "Tính áp suất khí",
+              "Tính thể tích khí",
+              "Tính nhiệt độ khí",
+              "Tính động năng phân tử",
+              "Tính áp suất trong bình kín"
+            ]
+          }
+        },
+        "Từ trường": {
+          exercises: {
+            "Lý thuyết": "Từ trường, lực từ, cảm ứng từ, từ thông, cảm ứng điện từ, máy phát điện xoay chiều, ứng dụng, điện từ trường, sóng điện từ, bài tập.",
+            "Bài tập trắc nghiệm": [
+              "Tính cảm ứng từ tại một điểm",
+              "Tính lực Lorentz",
+              "Tính từ thông qua một diện tích",
+              "Tính điện áp cảm ứng",
+              "Tính dòng điện cảm ứng",
+              "Tính lực điện từ",
+              "Tính công suất điện từ",
+              "Tính từ trường của dây dẫn thẳng dài",
+              "Tính từ trường của cuộn dây",
+              "Tính từ trường của nam châm"
+            ]
+          }
+        },
+        "Vật lí hạt nhân": {
+          exercises: {
+            "Lý thuyết": "Cấu trúc hạt nhân, phản ứng hạt nhân, năng lượng liên kết, phóng xạ, công nghệ hạt nhân, bài tập.",
+            "Bài tập trắc nghiệm": [
+              "Phản ứng hạt nhân",
+              "Năng lượng liên kết",
+              "Phóng xạ",
+              "Ứng dụng công nghệ hạt nhân",
+              "Tính năng lượng phóng xạ"
+            ]
+          }
+        }
+      },
+      "Chuyên đề": {
+        "Dòng điện xoay chiều": {
+          exercises: {
+            "Lý thuyết": "Đặc trưng, mạch RLC nối tiếp, máy biến áp, chỉnh lưu.",
+            "Bài tập trắc nghiệm": [
+              "Tính trở mạch RLC",
+              "Tính hiệu điện thế máy biến áp",
+              "Tính dòng điện chỉnh lưu"
+            ]
+          }
+        },
+        "Ứng dụng vật lí trong y học": {
+          exercises: {
+            "Lý thuyết": "Tia X, chụp X-quang, chụp cắt lớp, siêu âm, chụp cộng hưởng từ.",
+            "Bài tập trắc nghiệm": [
+              "Tính cường độ tia X",
+              "Phân tích ảnh X-quang",
+              "Ứng dụng siêu âm trong y học"
+            ]
+          }
+        },
+        "Vật lí lượng tử": {
+          exercises: {
+            "Lý thuyết": "Hiệu ứng quang điện, năng lượng photon, lưỡng tính sóng hạt, quang phổ vạch, vùng năng lượng tinh thể chất rắn.",
+            "Bài tập trắc nghiệm": [
+              "Tính năng lượng photon",
+              "Phân tích quang phổ vạch",
+              "Tính hiệu ứng quang điện"
+            ]
+          }
+        }
+      }
+    }
+  },
+  hoahoc: {
+    name: "Môn Hóa học",
+    semesters: {
+      "Chương trình chính": {
+        "Ester – Lipid": {
+          exercises: {
+            "Lý thuyết": "Cấu trúc, tính chất, ứng dụng este, lipid, xà phòng, chất giặt rửa.",
+            "Bài tập trắc nghiệm": [
+              "Phân biệt este và lipid",
+              "Tính phần trăm các nguyên tố trong este",
+              "Ứng dụng của xà phòng",
+              "Tính phản ứng hóa học"
+            ]
+          }
+        },
+        "Carbohydrate": {
+          exercises: {
+            "Lý thuyết": "Glucose, fructose, saccharose, tinh bột, cellulose, ứng dụng.",
+            "Bài tập trắc nghiệm": [
+              "Phân biệt các loại đường",
+              "Tính phần trăm các nguyên tố",
+              "Tính phản ứng lên men",
+              "Ứng dụng tinh bột"
+            ]
+          }
+        },
+        "Hợp chất chứa nitrogen": {
+          exercises: {
+            "Lý thuyết": "Amine, amino acid, peptide, protein, enzyme, vai trò sinh học.",
+            "Bài tập trắc nghiệm": [
+              "Phân biệt amine và amino acid",
+              "Tính phản ứng peptide",
+              "Ứng dụng enzyme"
+            ]
+          }
+        },
+        "Polymer": {
+          exercises: {
+            "Lý thuyết": "Đại cương, vật liệu polymer, ứng dụng công nghiệp.",
+            "Bài tập trắc nghiệm": [
+              "Phân loại polymer",
+              "Tính tính chất vật liệu",
+              "Ứng dụng polymer"
+            ]
+          }
+        },
+        "Pin điện và điện phân": {
+          exercises: {
+            "Lý thuyết": "Thế điện cực, pin điện hóa, quá trình điện phân, ứng dụng.",
+            "Bài tập trắc nghiệm": [
+              "Tính thế điện cực",
+              "Tính dòng điện điện phân",
+              "Ứng dụng pin điện"
+            ]
+          }
+        },
+        "Đại cương về kim loại": {
+          exercises: {
+            "Lý thuyết": "Cấu trúc tinh thể, tính chất vật lí/hóa học, luyện kim, hợp kim, ăn mòn kim loại.",
+            "Bài tập trắc nghiệm": [
+              "Phân loại kim loại",
+              "Tính tính chất vật lí",
+              "Ứng dụng luyện kim"
+            ]
+          }
+        },
+        "Nguyên tố nhóm IA và IIA": {
+          exercises: {
+            "Lý thuyết": "Tính chất, ứng dụng.",
+            "Bài tập trắc nghiệm": [
+              "Tính chất nhóm IA",
+              "Tính chất nhóm IIA",
+              "Ứng dụng các nguyên tố"
+            ]
+          }
+        },
+        "Kim loại chuyển tiếp và phức chất": {
+          exercises: {
+            "Lý thuyết": "Kim loại chuyển tiếp dãy thứ nhất, phức chất, tính chất, ứng dụng.",
+            "Bài tập trắc nghiệm": [
+              "Tính chất kim loại chuyển tiếp",
+              "Phức chất",
+              "Ứng dụng phức chất"
+            ]
+          }
+        }
+      }
+    }
+  }
+};
+
+const homeSection = document.getElementById('home-section');
+const subjectsSection = document.getElementById('subjects-section');
+const topicsSection = document.getElementById('topics-section');
+const exercisesSection = document.getElementById('exercises-section');
+const aiGradingSection = document.getElementById('ai-grading-section');
+const topicsContainer = document.getElementById('topics-container');
+const exercisesContainer = document.getElementById('exercises-container');
+const topicsTitle = document.getElementById('topics-title');
+const exercisesTitle = document.getElementById('exercises-title');
+const backToSubjectsBtn = document.getElementById('back-to-subjects');
+const backToTopicsBtn = document.getElementById('back-to-topics');
+const homeLink = document.getElementById('home-link');
+const subjectsLink = document.getElementById('subjects-link');
+const aiGradingLink = document.getElementById('ai-grading-link');
+const imageUpload = document.getElementById('image-upload');
+const gradeButton = document.getElementById('grade-button');
+const aiGradingResult = document.getElementById('ai-grading-result');
+
+function showSection(section) {
+  homeSection.classList.add('hidden');
+  subjectsSection.classList.add('hidden');
+  topicsSection.classList.add('hidden');
+  exercisesSection.classList.add('hidden');
+  aiGradingSection.classList.add('hidden');
+  section.classList.remove('hidden');
+}
+
+function renderSubjects() {
+  const container = document.querySelector('.subject-windows');
+  container.innerHTML = '';
+  for (const subjectKey in subjectsData) {
+    const subject = subjectsData[subjectKey];
+    const subjectDiv = document.createElement('div');
+    subjectDiv.className = 'window flex flex-col justify-center items-center';
+    subjectDiv.setAttribute('data-subject', subjectKey);
+    subjectDiv.tabIndex = 0;
+    subjectDiv.setAttribute('role', 'button');
+    subjectDiv.setAttribute('aria-pressed', 'false');
+    subjectDiv.setAttribute('aria-label', `Mở môn học ${subject.name}`);
+    subjectDiv.textContent = subject.name;
+    subjectDiv.onclick = () => {
+      renderTopics(subjectKey);
+      showSection(topicsSection);
+    };
+    subjectDiv.onkeypress = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        renderTopics(subjectKey);
+        showSection(topicsSection);
+      }
+    };
+    container.appendChild(subjectDiv);
+  }
+}
+
+function renderTopics(subjectKey) {
+  const subject = subjectsData[subjectKey];
+  topicsTitle.textContent = `Chủ đề của ${subject.name}`;
+  topicsContainer.innerHTML = '';
+  for (const semester in subject.semesters) {
+    const semesterDiv = document.createElement('div');
+    semesterDiv.className = 'mb-8';
+    const semesterTitle = document.createElement('h3');
+    semesterTitle.className = 'text-3xl font-bold mb-6';
+    semesterTitle.textContent = semester;
+    semesterDiv.appendChild(semesterTitle);
+    const topicGrid = document.createElement('div');
+    topicGrid.className = 'topic-windows';
+    for (const topicName in subject.semesters[semester]) {
+      const topicDiv = document.createElement('div');
+      topicDiv.className = 'subtopic-window';
+      topicDiv.textContent = topicName;
+      topicDiv.tabIndex = 0;
+      topicDiv.setAttribute('role', 'button');
+      topicDiv.setAttribute('aria-pressed', 'false');
+      topicDiv.setAttribute('aria-label', `Mở chủ đề ${topicName}`);
+      topicDiv.onclick = () => {
+        renderExercises(subjectKey, semester, topicName);
+        showSection(exercisesSection);
+      };
+      topicDiv.onkeypress = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          renderExercises(subjectKey, semester, topicName);
+          showSection(exercisesSection);
+        }
+      };
+      topicGrid.appendChild(topicDiv);
+    }
+    semesterDiv.appendChild(topicGrid);
+    topicsContainer.appendChild(semesterDiv);
+  }
+}
+
+function renderExercises(subjectKey, semester, topicName) {
+  const exercisesTitleText = `Dạng bài tập: ${topicName} (${semester})`;
+  exercisesTitle.textContent = exercisesTitleText;
+  exercisesContainer.innerHTML = '';
+  const exercises = subjectsData[subjectKey].semesters[semester][topicName].exercises;
+  for (const exerciseType in exercises) {
+    const exerciseDiv = document.createElement('div');
+    exerciseDiv.className = 'exercise-windows';
+    const title = document.createElement('h4');
+    title.innerHTML = `<span class="badge ${exerciseType === 'Lý thuyết' ? 'badge-theory' : 'badge-exercise'}">${exerciseType}</span>`;
+    exerciseDiv.appendChild(title);
+    const content = exercises[exerciseType];
+    if (typeof content === 'string') {
+      const p = document.createElement('p');
+      p.textContent = content;
+      exerciseDiv.appendChild(p);
+    } else if (Array.isArray(content)) {
+      const ul = document.createElement('ul');
+      ul.className = 'exercise-list';
+      content.forEach(item => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        ul.appendChild(li);
+      });
+      exerciseDiv.appendChild(ul);
+    }
+    exercisesContainer.appendChild(exerciseDiv);
+  }
+}
+
+// Navigation event listeners
+backToSubjectsBtn.addEventListener('click', () => {
+  showSection(subjectsSection);
+});
+backToTopicsBtn.addEventListener('click', () => {
+  showSection(topicsSection);
+});
+homeLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  showSection(homeSection);
+});
+subjectsLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  renderSubjects();
+  showSection(subjectsSection);
+});
